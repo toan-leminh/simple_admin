@@ -8,6 +8,9 @@
  */
 class Auth
 {
+    const AUTH_PATH_FILE = '.auth';
+    const AUTH_KEY = 'ADMIN';
+
     /**
      * 管理者権限を確認
      * @return bool TRUE:権限あり FALSE:権限なし
@@ -15,7 +18,8 @@ class Auth
     public static function check(){
         $checkAuth = false;
 
-        if($_SESSION && isset($_SESSION['Auth']) && $_SESSION['Auth'] == 'ADMIN'){
+        $authString = self::readAuthFile();
+        if($authString == self::AUTH_KEY){
             $checkAuth = true;
         }
         return $checkAuth;
@@ -25,14 +29,9 @@ class Auth
      * 管理者権限を取得
      */
     public static function add(){
-        // セッション開始
-        if(!$_SESSION){
-            session_start();
-        }
-
         // 管理者権限を確認する。権限がない場合追加する
         if(!self::check()){
-            $_SESSION['Auth'] = 'ADMIN';
+            file_put_contents(self::AUTH_PATH_FILE, self::AUTH_KEY);
         }
     }
 
@@ -42,7 +41,19 @@ class Auth
     public static function delete(){
         // 管理者権限を確認する。権限がある場合削除する
         if(self::check()){
-            unset($_SESSION["Auth"]);
+            file_put_contents(self::AUTH_PATH_FILE, '');
+        }
+    }
+
+    /**
+     * .authFile の内容を読み込む
+     * @return null|string
+     */
+    public static function readAuthFile(){
+        if(file_exists(self::AUTH_PATH_FILE)){
+            return file_get_contents(self::AUTH_PATH_FILE);
+        }else{
+            return null;
         }
     }
 }
