@@ -1,59 +1,49 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: leminhtoan
  * Date: 7/26/17
  * Time: 13:45
  */
-class Auth
-{
-    const AUTH_PATH_FILE = '.auth';
-    const AUTH_KEY = 'ADMIN';
 
-    /**
-     * 管理者権限を確認
-     * @return bool TRUE:権限あり FALSE:権限なし
-     */
-    public static function check(){
-        $checkAuth = false;
+define('AUTH_PATH_FILE', '.auth');
+define('AUTH_KEY', 'ADMIN');
 
-        $authString = self::readAuthFile();
-        if($authString == self::AUTH_KEY){
-            $checkAuth = true;
-        }
-        return $checkAuth;
+// セッションが存在しない場合、開始する
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+/**
+ * 管理者権限を確認
+ * @return bool TRUE:権限あり FALSE:権限なし
+ */
+function checkAuth(){
+    $checkAuth = false;
+
+    // .authファイルを読み取り
+    $authString = readAuthFile();
+    $authArray = explode(':', $authString);
+
+    print_r($authArray);
+    var_dump(session_id());
+
+    // ファイル内容にADMINのセッションIDを確認する
+    if($authArray && count($authArray) == 2 && $authArray[0] == AUTH_KEY && $authArray[1] == session_id()){
+        $checkAuth = true;
     }
+    return $checkAuth;
+}
 
-    /**
-     * 管理者権限を取得
-     */
-    public static function add(){
-        // 管理者権限を確認する。権限がない場合追加する
-        if(!self::check()){
-            file_put_contents(self::AUTH_PATH_FILE, self::AUTH_KEY);
-        }
-    }
-
-    /**
-     * 管理者権限を削除
-     */
-    public static function delete(){
-        // 管理者権限を確認する。権限がある場合削除する
-        if(self::check()){
-            file_put_contents(self::AUTH_PATH_FILE, '');
-        }
-    }
-
-    /**
-     * .authFile の内容を読み込む
-     * @return null|string
-     */
-    public static function readAuthFile(){
-        if(file_exists(self::AUTH_PATH_FILE)){
-            return file_get_contents(self::AUTH_PATH_FILE);
-        }else{
-            return null;
-        }
+/**
+ * .authFile の内容を読み込む
+ * @return null|string
+ */
+function readAuthFile(){
+    if(file_exists(AUTH_PATH_FILE)){
+        return file_get_contents(AUTH_PATH_FILE);
+    }else{
+        return null;
     }
 }

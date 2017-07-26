@@ -7,21 +7,37 @@
  */
 require_once "Auth.php";
 
-// セッションが存在しない場合、開始する
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-
 if (isset($_POST['add_button'])) {
     //管理者権限を追加
-    Auth::add();
+    add();
 } else if (isset($_POST['delete_button'])) {
     //管理者権限を削除
-    Auth::delete();
+    delete();
 }
 
 // 現状の管理者権限を確認
-$auth = Auth::check();
+$auth = checkAuth();
+
+/**
+ * 管理者権限を取得
+ */
+function add(){
+    // 管理者権限を確認する。権限がない場合追加する
+    if(!checkAuth()){
+        $content = AUTH_KEY .  ':' . session_id();
+        file_put_contents(AUTH_PATH_FILE, $content);
+    }
+}
+
+/**
+ * 管理者権限を削除
+ */
+function delete(){
+    // 管理者権限を確認する。権限がある場合削除する
+    if(checkAuth()){
+        file_put_contents(AUTH_PATH_FILE, '');
+    }
+}
 
 ?>
 <html>
