@@ -14,7 +14,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-
 /**
  * 管理者権限を確認
  * @return bool TRUE:権限あり FALSE:権限なし
@@ -25,9 +24,6 @@ function checkAuth(){
     // .authファイルを読み取り
     $authString = readAuthFile();
     $authArray = explode(':', $authString);
-
-    print_r($authArray);
-    var_dump(session_id());
 
     // ファイル内容にADMINのセッションIDを確認する
     if($authArray && count($authArray) == 2 && $authArray[0] == AUTH_KEY && $authArray[1] == session_id()){
