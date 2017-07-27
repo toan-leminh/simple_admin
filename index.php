@@ -9,35 +9,26 @@ require_once "Auth.php";
 
 if (isset($_POST['add_button'])) {
     //管理者権限を追加
-    add();
+    if(add()){
+        $message = '権限を取得しました';
+    }else{
+        $message = '権限を取得失敗しました';
+    }
 } else if (isset($_POST['delete_button'])) {
     //管理者権限を削除
-    delete();
+    if(delete()){
+        $message = '権限を削除しました';
+    }else{
+        $message = '権限を削除失敗しました';
+    };
+} else if (isset($_POST['unlock_button'])) {
+    //ファイルロックを削除
+    unlock();
+    $message = 'ファイルロックをクリアしました';
 }
 
 // 現状の管理者権限を確認
 $auth = checkAuth();
-
-/**
- * 管理者権限を取得
- */
-function add(){
-    // 管理者権限を確認する。権限がない場合追加する
-    if(!checkAuth()){
-        $content = AUTH_KEY .  ':' . session_id();
-        file_put_contents(AUTH_PATH_FILE, $content);
-    }
-}
-
-/**
- * 管理者権限を削除
- */
-function delete(){
-    // 管理者権限を確認する。権限がある場合削除する
-    if(checkAuth()){
-        file_put_contents(AUTH_PATH_FILE, '');
-    }
-}
 
 ?>
 <html>
@@ -47,12 +38,14 @@ function delete(){
 </head>
 <body>
 <div class="container">
-    <h2>権限: <?php echo $auth ? '管理者' : 'なし' ?></h2>
+    <h2>権限: <?php echo $auth==1 ? '管理者' : 'なし' ?></h2>
+    <span class="error"> <?php echo $message ?></span>
     <hr>
     <form class="form-horizontal" method="post">
         <div class="form-group text-center">
             <input type="submit" class="btn btn-success" id="add_button" name="add_button" value="管理者権限を取得" />
-            <input type="submit" class="btn btn-danger" id="delete_button"  name="delete_button" value="管理者権限を削除" />
+            <input type="submit" class="btn btn-primary" id="delete_button"  name="delete_button" value="管理者権限を削除" />
+            <input type="submit" class="btn btn-danger" id="delete_button"  name="unlock_button" value="ロックファイルをクリア" />
         </div>
     </form>
 </div>
