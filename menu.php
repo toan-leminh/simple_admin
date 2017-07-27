@@ -30,27 +30,9 @@ $auth = checkAuth();
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="style.css" type="text/css">
     <title>pbx 管理画面</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <script src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
 </head>
 <body>
-
-<div class="menu" align="left" style="margin-left:10px">
-    <h2>権限: <?php echo $auth==1 ? '管理者' : 'なし' ?></h2>
-    <span class="error"> <?php echo $message ?></span>
-    <hr>
-    <form class="form-horizontal" method="post">
-        <div class="form-group">
-            <?php if($auth == 1){ ?>
-                <input type="submit" class="btn btn-primary" id="delete_button"  name="delete_button" value="管理者権限を削除" />
-            <?php }else{ ?>
-                <input type="submit" class="btn btn-success" style="width: 180px" id="add_button" name="add_button" value="管理者権限を取得" />
-                <div style="height: 10px"></div>
-                <input type="submit" class="btn btn-danger" style="width: 180px" id="unlock_button"  name="unlock_button" value="ロックファイルをクリア" />
-            <?php } ?>
-        </div>
-    </form>
-</div>
 
 <div class="menu" align="left">
     <ul>
@@ -65,12 +47,28 @@ $auth = checkAuth();
         <li><a href=sip.php>外線登録(SIP)</a></li>
         <li><a href=vm.php>留守電メール登録</a></li>
     </ul>
+    <div class="privilege">
+        <div class="display">
+            <h2>権限: <?php echo $auth==1 ? '管理者' : 'なし' ?></h2>
+            <span class="error"> <?php echo $message ?></span>
+        </div>
+        <hr>
+        <form class="form-horizontal" method="post">
+            <?php if($auth == 1){ ?>
+                <input type="submit" class="btn btn-primary" id="delete_button"  name="delete_button" value="管理者権限を削除" />
+            <?php }else{ ?>
+                <input type="submit" class="btn btn-success"  id="add_button" name="add_button" value="管理者権限を取得" />
+                <div style="height: 10px"></div>
+                <input type="submit" class="btn btn-danger"  id="unlock_button"  name="unlock_button" value="ロックファイルをクリア" />
+            <?php } ?>
+        </form>
+    </div>
 </div>
 
 <div class="main" align="left">
     <br />
-
 </div>
+
 
 <script>
     $('#add_button').on('click', function (e) {
