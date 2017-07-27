@@ -35,17 +35,18 @@ $auth = checkAuth();
 </head>
 <body>
 
-<div class="container">
+<div class="menu" align="left" style="margin-left:10px">
     <h2>権限: <?php echo $auth==1 ? '管理者' : 'なし' ?></h2>
     <span class="error"> <?php echo $message ?></span>
     <hr>
     <form class="form-horizontal" method="post">
-        <div class="form-group text-center">
+        <div class="form-group">
             <?php if($auth == 1){ ?>
                 <input type="submit" class="btn btn-primary" id="delete_button"  name="delete_button" value="管理者権限を削除" />
             <?php }else{ ?>
-                <input type="submit" class="btn btn-success" id="add_button" name="add_button" value="管理者権限を取得" />
-                <input type="submit" class="btn btn-danger" id="unlock_button"  name="unlock_button" value="ロックファイルをクリア" />
+                <input type="submit" class="btn btn-success" style="width: 180px" id="add_button" name="add_button" value="管理者権限を取得" />
+                <div style="height: 10px"></div>
+                <input type="submit" class="btn btn-danger" style="width: 180px" id="unlock_button"  name="unlock_button" value="ロックファイルをクリア" />
             <?php } ?>
         </div>
     </form>
