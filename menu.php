@@ -68,12 +68,6 @@ $auth = checkAuth();
         </form>
     </div>
 </div>
-
-<div class="main" align="left">
-    <br />
-</div>
-
-
 <script>
     $('#add_button').on('click', function (e) {
         // メッセージ表示
@@ -97,6 +91,5 @@ $auth = checkAuth();
     });
 </script>
 
-</body>
+<div class="main" align="left"> <br/>
 
-</html>
