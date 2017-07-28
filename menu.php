@@ -1,6 +1,10 @@
 <?php
 require_once "Auth.php";
 
+// Set no cache on browser
+header("Cache-Control: no cache");
+session_cache_limiter("private_no_expire");
+
 if (isset($_POST['add_button'])) {
     //管理者権限を追加
     if(add()){
