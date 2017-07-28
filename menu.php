@@ -39,6 +39,7 @@ $auth = checkAuth();
 <body>
 
 <div class="menu" align="left">
+    <?php if ($auth) {?>
     <ul>
         <li><a href=dial.php>内線番号管理</a></li>
         <li><a href=cal.php>営業時間管理</a></li>
@@ -51,6 +52,7 @@ $auth = checkAuth();
         <li><a href=sip.php>外線登録(SIP)</a></li>
         <li><a href=vm.php>留守電メール登録</a></li>
     </ul>
+    <?php } ?>
     <div class="privilege">
         <div class="display">
             <h2>権限: <?php echo $auth==1 ? '管理者' : 'なし' ?></h2>
