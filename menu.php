@@ -39,7 +39,7 @@ $auth = checkAuth();
 <body>
 
 <div class="menu" align="left">
-    <?php if ($auth) {?>
+    <?php if ($auth == 1) {?>
     <ul>
         <li><a href=dial.php>内線番号管理</a></li>
         <li><a href=cal.php>営業時間管理</a></li>
