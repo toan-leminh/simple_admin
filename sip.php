@@ -11,24 +11,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['del'])) {
         if ($_POST['del'] == 1) {
             $id = substr($_POST['id'], 0, 4);
-            if (is_file($Path . $id)) {
-                if (checkAuth() == 1) {
+            if (checkAuth() == 1) {
+                if (is_file($Path . $id)) {
                     if (unlink($Path . $id)) {
                         echo ($id) . "を除外";
                     }
-                }else{
-                    echo "<b>管理者権限がありません</b><br />";
                 }
-            }
-            if (is_file($Path . "register" . substr($_POST['id'], 3, 1))) {
-                if (checkAuth() == 1) {
+                if (is_file($Path . "register" . substr($_POST['id'], 3, 1))) {
                     if (unlink($Path . "register" . substr($_POST['id'], 3, 1))) {
                         //echo ("register".substr($_POST['id'],3,1)) ."を除外しました";
                         echo "しました";
                     }
-                }else{
-                    echo "<b>管理者権限がありません</b><br />";
                 }
+            }else{
+                echo "<b>管理者権限がありません</b><br />";
             }
         }
     } else {
