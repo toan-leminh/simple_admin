@@ -81,7 +81,7 @@ for ($i = 1; $i < 10; $i++) {
     }
     foreach (glob($Path . $i . '/m1/*') as $file) {
         if (is_file($file)) {
-            echo "<a href=dial.php?FP=" . str_replace("/etc/asterisk/cf/main/", "", $file) . ">";
+            echo "<a href=dial.php?FP=" . str_replace($Path, "", $file) . ">";
             echo basename($file) . "</a> ";
             $opt = str_replace("<option value='" . basename($file) . "'>" . basename($file) . "</option>", "", $opt);
         }
@@ -99,7 +99,7 @@ for ($i = 1; $i < 10; $i++) {
     }
     foreach (glob($Path . $i . '/m2/*') as $file) {
         if (is_file($file)) {
-            echo "<a href=dial.php?FP=" . str_replace("/etc/asterisk/cf/main/", "", $file) . ">";
+            echo "<a href=dial.php?FP=" . str_replace($Path, "", $file) . ">";
             echo basename($file) . "</a> ";
             $opt = str_replace("<option value='" . basename($file) . "'>" . basename($file) . "</option>", "", $opt);
         }
