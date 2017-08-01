@@ -50,6 +50,7 @@ $auth = checkAuth();
         <li><a href=iax.php>子機登録(IAX)</a></li>
         <li><a href=sip.php>外線登録(SIP)</a></li>
         <li><a href=vm.php>留守電メール登録</a></li>
+        <li><a href=ban.php>着信拒否番号</a></li>
     </ul>
     <div class="privilege">
         <div class="display">
