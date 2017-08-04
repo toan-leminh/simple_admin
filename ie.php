@@ -1,7 +1,5 @@
 <?php
 require_once 'Auth.php';
-require_once 'Zip.php';
-ini_set('display_errors', 1);
 
 //$path='/etc/asterisk/cf/cal/';
 $cfFolder = 'cf';
@@ -138,7 +136,8 @@ function removeDirectory($dir) {
 }
 
 // Backup files
-$backupList = glob($backupFolder . '/*');
+$backupList = array_reverse(glob($backupFolder . '/*'));
+$backupList = array_slice($backupList, 0, 10); // 直近 10ファイル表示
 
 include('menu.php');
 ?>
