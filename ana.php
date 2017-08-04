@@ -2,7 +2,7 @@
 include('menu.php');
 
 //$Path ='/etc/asterisk/cf/cal/';
-$Path = 'cal/';
+$Path = 'cf/cal/';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //file_put_contents

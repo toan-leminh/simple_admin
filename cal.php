@@ -2,7 +2,7 @@
 include('menu.php');
 date_default_timezone_set('Asia/Tokyo');
 //$Path ='/etc/asterisk/cf/cal/';
-$Path = 'cal/';
+$Path = 'cf/cal/';
 
 $weekjp = array('日', '月', '火', '水', '木', '金', '土');
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {

@@ -4,7 +4,7 @@ include('menu.php');
 echo '<table>';
 
 //$Path ='/etc/asterisk/cf/main/';
-$Path = 'main/';
+$Path = 'cf/main/';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['user1'])) {

@@ -5,6 +5,7 @@ require_once "Auth.php";
 header("Cache-Control: no cache");
 session_cache_limiter("private_no_expire");
 
+$message = '';
 if (isset($_POST['add_button'])) {
     //管理者権限を追加
     if(add()){
@@ -51,6 +52,11 @@ $auth = checkAuth();
         <li><a href=sip.php>外線登録(SIP)</a></li>
         <li><a href=vm.php>留守電メール登録</a></li>
         <li><a href=ban.php>着信拒否番号</a></li>
+        <li><a href=ie.php>着信拒否番号</a></li>
+    </ul>
+
+    <ul>
+        <li><a href=ie.php>エクスポート・インポート</a></li>
     </ul>
     <div class="privilege">
         <div class="display">

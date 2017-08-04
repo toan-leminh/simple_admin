@@ -2,7 +2,7 @@
 include('menu.php');
 
 //$Path ='/etc/asterisk/cf/VOICE/';
-$Path = 'VOICE/';
+$Path = 'cf/VOICE/';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //file_put_contents

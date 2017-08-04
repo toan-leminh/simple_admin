@@ -2,7 +2,7 @@
 include('menu.php');
 define('MAX_PHONE_NO', 10);  // 電話番号入力行数
 
-$Path = 'ban/';
+$Path = 'cf/ban/';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if($_POST['phone']){

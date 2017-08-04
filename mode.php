@@ -3,7 +3,7 @@ include('menu.php');
 require_once 'Auth.php';
 
 //$path='/etc/asterisk/cf/cal/';
-$path='cal/';
+$path='cf/cal/';
 
 
 if(isset($_GET['mode'])) {

@@ -5,7 +5,7 @@ echo '<table>';
 
 //print_r( $_POST);
 //$Path ='/etc/asterisk/cf/SIP/';
-$Path = 'SIP/';
+$Path = 'cf/SIP/';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['del'])) {
