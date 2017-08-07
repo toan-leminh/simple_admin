@@ -60,7 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if (!$backupReturn) {
                         // インポート
                         $file = $_FILES['file'];
-                        if ($file['type'] == 'application/zip') {
+                        // ファイルタイプをチェックする
+                        if ($file['type'] == 'application/zip' || $file['type']== 'application/x-zip-compressed') {
                             $uploadFileName = $file['tmp_name'];
 
                             removeDirectory($cfFolder);
@@ -73,6 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             } else {
                                 $errorMessage = "インポート失敗しました";
                             }
+                        }else{
+                            $errorMessage = "アップロードファイルが違うためインポートできません";
                         };
 
                     } else {
