@@ -108,3 +108,12 @@ function checktime($hour, $min)
 
 ?>
 
+<script src="js/jquery.mask.min.js"></script>
+<script>
+    $(function() {
+        // IEの場合、type=timeサーポトされないのでJquery Mask Pluginで対応
+        if ($('input[type="time"]').prop('type') != 'time' ) {
+            $('input[type="time"]').mask('00:00').attr('placeholder', '--:--');
+        }
+    });
+</script>

@@ -61,22 +61,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         // インポート
                         $file = $_FILES['file'];
                         // ファイルタイプをチェックする
-                        if ($file['type'] == 'application/zip' || $file['type']== 'application/x-zip-compressed') {
-                            $uploadFileName = $file['tmp_name'];
+                        //if ($file['type'] == 'application/zip' || $file['type']== 'application/x-zip-compressed') {
+                        $uploadFileName = $file['tmp_name'];
 
-                            removeDirectory($cfFolder);
-                            mkdir($cfFolder);
-                            // Unzip folder
-                            exec("unzip  -P $zipPassword  $uploadFileName -d $parentFolder 2>&1", $output, $return);
+                        removeDirectory($cfFolder);
+                        mkdir($cfFolder);
+                        // Unzip folder
+                        exec("unzip  -P $zipPassword  $uploadFileName -d $parentFolder 2>&1", $output, $return);
 
-                            if (!$return) {
-                                $errorMessage = "インポート成功しました";
-                            } else {
-                                $errorMessage = "インポート失敗しました";
-                            }
-                        }else{
-                            $errorMessage = "アップロードファイルが違うためインポートできません";
-                        };
+                        if (!$return) {
+                            $errorMessage = "インポート成功しました";
+                        } else {
+                            $errorMessage = "インポート失敗しました";
+                        }
+                        //}else{
+                        //    $errorMessage = "アップロードファイルが違うためインポートできません";
+                        //};
 
                     } else {
                         $errorMessage = "バックアップ失敗しました";
