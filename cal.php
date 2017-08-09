@@ -113,7 +113,7 @@ function checktime($hour, $min)
     $(function() {
         // IEの場合、type=timeサーポトされないのでJquery Mask Pluginで対応
         if ($('input[type="time"]').prop('type') != 'time' ) {
-            $('input[type="time"]').mask('00:00').attr('placeholder', '--:--');
+            $('input[type="time"]').attr('type', 'text').mask('00:00').attr('placeholder', '--:--');
         }
     });
 </script>
