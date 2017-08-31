@@ -1,7 +1,7 @@
 <?php
 include('menu.php');
 define('MIN_ROOM_NO', 30);
-define('MAX_ROOM_NO', 45);
+define('MAX_ROOM_NO', 49);
 
 
 $Path = 'cf/meetme/';
