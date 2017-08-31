@@ -6,7 +6,7 @@
  * Time: 13:45
  */
 
-define('AUTH_PATH_FILE', '.auth');
+define('AUTH_PATH_FILE', 'cf/.auth');
 define('AUTH_KEY', 'ADMIN');
 
 // セッションが存在しない場合、開始する
