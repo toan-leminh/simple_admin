@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Create new file
                 $filePath = $Path . $Num . '/t1_' . $daihyoNo;
                 if (!file_put_contents($filePath , "")) {
-                    echo "代表" . ($Num * 100) . "欄の代表1を更新しました";
+                    echo "代表" . ($Num * 100) . "欄の代表1の待機時間を更新しました";
                 }
             // 内線追加の場合
             }else{
@@ -55,13 +55,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Create new file
                 $filePath = $Path . $Num . '/t2_' . $daihyoNo;
                 if (!file_put_contents($filePath , "")) {
-                    echo "代表" . ($Num * 100) . "欄の代表1を更新しました";
+                    echo "代表" . ($Num * 100) . "欄の代表2の待機時間を更新しました";
                 }
             }else{
                 if (!file_put_contents($Path . $Num . '/m2/' . $file, "")) {
                     echo "内線[" . $file . "]を代表電番" . $Num . "00の代表2に追加しました";
                 }
-
             }
         }else{
             echo "<b>管理者権限がありません</b><br />";
