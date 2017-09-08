@@ -57,6 +57,7 @@ $auth = checkAuth();
 
     <ul>
         <li><a href=ie.php>エクスポート・インポート</a></li>
+        <li><a href=firewall.php>ファイアーウォール</a></li>
     </ul>
     <div class="privilege">
         <div class="display">

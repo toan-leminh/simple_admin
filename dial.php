@@ -122,7 +122,7 @@ for ($i = 1; $i < 10; $i++) {
     echo '<td rowspan=4>' . $i * 100 . '</td>';
     echo '<tr><form method=post action=dial.php><td>代表1';
     echo '<select name="daihyoNo" class="daihyoNo">';
-    for ($k = 10; $k < 99; $k++) {
+    for ($k = 10; $k <= 99; $k++) {
         $selected = ($k == $daihyoNo[1]) ? 'selected' : '';
         echo "<option value='{$k}' {$selected}>{$k}</option>";
     }
@@ -149,7 +149,7 @@ for ($i = 1; $i < 10; $i++) {
     echo "<input type='hidden' name='Num' value='{$i}'>";
     echo '</td></form></tr><tr><form method=post action=dial.php><td>代表2';
     echo '<select name="daihyoNo" class="daihyoNo">';
-    for ($k = 10; $k < 99; $k++) {
+    for ($k = 10; $k <= 99; $k++) {
         $selected = ($k == $daihyoNo[2]) ? 'selected' : '';
         echo "<option value='{$k}' {$selected}>{$k}</option>";
     }

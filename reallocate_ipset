@@ -1,0 +1,27 @@
+#!/bin/bash
+set -eu
+
+function allocate_ipset() {
+        TYPE=${2:-hash\:net}
+        firewall-cmd --quiet --permanent --new-ipset=$1 --type=$TYPE
+        firewall-cmd --quiet --permanent --ipset=$1 --add-entries-from-file=/tmp/$1.txt
+}
+
+# Main
+[ $# -lt 1 ]&amp;&amp; exit 1
+IPSETS=(`firewall-cmd --get-ipsets`)
+while true; do
+        wget  https://ipv4.fetus.jp/${1}.txt -P /tmp -q
+
+        for i in &quot;${IPSETS[@]}&quot;; do
+                [ &quot;$1&quot; != &quot;$i&quot; ]&amp;&amp; continue
+                firewall-cmd --quiet --permanent --delete-ipset=$1
+        done
+
+        allocate_ipset $1
+
+        #rm -f /tmp/${1}.txt
+        shift
+        [ $# -lt 1 ]&amp;&amp; break
+done
+exit $?
