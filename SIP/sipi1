@@ -1,8 +1,0 @@
-[sip1](base)
-username=test
-fromuser=test
-secret=pass
-callgroup=1
-host=smart.0038.net
-fromdomain=smart.0038.net
-dtmfmode=inband

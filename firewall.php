@@ -5,6 +5,7 @@ ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
 
+//exec("firewall_config/reallocate_ipset au bg br ca cn co de fr gb hk in it kr nl pl ro ru th tr ua us vn")
 $path = 'cf/firewall';
 $countryList = [
     "au" => "オーストラリア",
@@ -46,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // firewalldでipsetを遮断する
                 // firewall-cmd --permanent --zone=drop --add-source=ipset:cn
                 // firewall-cmd --reload
-                exec("firewall-cmd --permanent --zone=drop --add-source=ipset:$country && firewall-cmd --reload", $output, $return);
+                exec("sudo /usr/bin/firewall-cmd --permanent --zone=drop --add-source=ipset:$country && sudo /usr/bin/firewall-cmd --reload", $output, $return);
 
                 if(!$return){
                     // Create file
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                     // firewalldでipsetを許可する
                     // firewall-cmd --permanent --zone=external --add-source=ipset:jp
                     // firewall-cmd --reload
-                    exec("firewall-cmd --permanent --zone=external --add-source=ipset:$removeCountry && firewall-cmd --reload", $output, $return);
+                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=external --add-source=ipset:$removeCountry && sudo /usr/bin/firewall-cmd --reload", $output, $return);
                     if(!$return){
                         // Remove file
                         unlink($removeFile);
