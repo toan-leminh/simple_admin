@@ -88,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 
                         $errorMessage = "ブラックリストから外しました";
                     }else{
+                        print_r($output);
                         $errorMessage = "ブラックリストから外すのは失敗ました";
                     }
                 }
