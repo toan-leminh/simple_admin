@@ -81,14 +81,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                     // firewalldでipsetを許可する
                     // firewall-cmd --permanent --zone=external --add-source=ipset:jp
                     // firewall-cmd --reload
-                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=drop --remove-source:$removeCountry && sudo /usr/bin/firewall-cmd --reload", $output, $return);
+                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=drop --remove-source=ipset:$removeCountry && sudo /usr/bin/firewall-cmd --reload", $output, $return);
                     if(!$return){
                         // Remove file
                         unlink($removeFile);
 
                         $errorMessage = "ブラックリストから外しました";
                     }else{
-                        print_r($output);
                         $errorMessage = "ブラックリストから外すのは失敗ました";
                     }
                 }
