@@ -20,7 +20,7 @@ $countryList = [
     "hk" => "香港",
     "in" => "インド",
     "it" => "イタリア",
-    //"jp" => "日本",
+    "jp" => "日本",
     "kr" => "韓国",
     "nl" => "オランダ",
     "pl" => "ポーランド",
@@ -34,78 +34,111 @@ $countryList = [
 ];
 
 $errorMessage = '';
+
+
 // POSTメソッドを確認
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // 管理者権限チェック
-    if(checkAuth() == 1){
-        $country = $_POST['country'];
-        $file = $path . '/' . $country;
+    if (checkAuth() == 1) {
+        // Edit black list
+        if (isset($_POST['edit_black_list'])) {
+            $folder = 'black';
+            $currentList =  getFileName($path . '/black/*');
+            $newList = $_POST['black_list'];
+            $zone = "drop";
+            $listName = "ブラックリスト";
 
-        // Check country
-        if(isset($countryList[$country])){
-            if(!file_exists($file)){
-                // firewalldでipsetを遮断する
-                // firewall-cmd --permanent --zone=drop --add-source=ipset:cn
-                // firewall-cmd --reload
-                exec("sudo /usr/bin/firewall-cmd --permanent --zone=drop --add-source=ipset:$country && sudo /usr/bin/firewall-cmd --reload", $output, $return);
-
-                if(!$return){
-                    // Create file
-                    file_put_contents($file, "");
-
-                    $errorMessage = "ブラックリストに追加は成功しました";
-                }else{
-                    $errorMessage = "ブラックリストに追加は失敗しました";
-                }
-            }else{
-                $errorMessage = "すでに追加されました";
+            // Can't remove jp
+            if(isset($newList['jp'])){
+                unset($newList['jp']);
             }
+        // Edit white list
         }else{
-            $errorMessage = "国コードがサポートしておりません";
+            $folder = 'white';
+            $currentList =  getFileName($path . '/white/*');
+            $newList = $_POST['white_list'];
+            $zone = "external";
+            $listName = "ホワイトリスト";
+
+            // Always allow jp
+            $newList['jp'] = $countryList['jp'];
         }
-    }else{
-        $errorMessage =  "<b>管理者権限がありません</b><br />";
-    }
-}
+        $addCountries = array_diff($newList, $currentList);
+        $removeCountries = array_diff($currentList, $newList);
 
-// GET 確認
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if(isset($_GET['remove_country'])){
-        $removeCountry = $_GET['remove_country'];
+        $message = [];
+        foreach ($addCountries as $addCountry) {
+            // Check country
+            if (isset($countryList[$addCountry])) {
+                $addFile = $path . '/black/' . $addCountry;
+                $addCountryName = $countryList[$addCountry];
+                if (!file_exists($addFile)) {
+                    // firewalldでipsetを遮断する
+                    // firewall-cmd --permanent --zone=drop --add-source=ipset:cn
+                    // firewall-cmd --reload
+                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=$zone --add-source=ipset:$addCountry", $output, $return);
 
-        // Check country in country list
-        if(isset($countryList[$removeCountry])) {
-            if(checkAuth() == 1) {
-                $removeFile = $path . '/' . $removeCountry;
-                if(file_exists($removeFile)){
+                    if (!$return) {
+                        // Create file
+                        file_put_contents($addFile, "");
+                    } else {
+                        $message[] = "「{$addCountryName}」は{$listName}に追加失敗しました";
+                    }
+                }
+            } else {
+                $message[] = "「{$addCountry}」の国コードがサポートしておりません";
+            }
+        }
+
+        foreach ($removeCountries as $removeCountry) {
+            // Check country in country list
+            if (isset($countryList[$removeCountry])) {
+                $removeFile = $path . '/black/' . $removeCountry;
+                $removeCountryName = $countryList[$removeCountry];
+
+                if (file_exists($removeFile)) {
                     // firewalldでipsetを許可する
                     // firewall-cmd --permanent --zone=external --add-source=ipset:jp
                     // firewall-cmd --reload
-                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=drop --remove-source=ipset:$removeCountry && sudo /usr/bin/firewall-cmd --reload", $output, $return);
-                    if(!$return){
+                    exec("sudo /usr/bin/firewall-cmd --permanent --zone=$zone --remove-source=ipset:$removeCountry", $output, $return);
+                    if (!$return) {
                         // Remove file
                         unlink($removeFile);
-
-                        $errorMessage = "ブラックリストから外しました";
-                    }else{
-                        $errorMessage = "ブラックリストから外すのは失敗ました";
+                    } else {
+                        $message[] = "「{$removeCountryName}」は{$listName}から外すのは失敗ました";
                     }
                 }
-            }else{
-                $errorMessage =  "<b>管理者権限がありません</b><br />";
+            } else {
+                $message[] = "「{$removeCountry}」国コードがサポートしておりません";
             }
-        }else{
-            $errorMessage = "国コードがサポートしておりません";
         }
+        if (count($removeCountries) + count($addCountries)) {
+            // Success
+            if (count($message) == 0) {
+                $errorMessage = "ブラックリストを変更しました";
+            // Error
+            } else {
+                $errorMessage = implode("<br>", $message);
+            }
+
+            // Reload firewall
+            exec("sudo /usr/bin/firewall-cmd --reload");
+        }
+    }else {
+        $errorMessage = "<b>管理者権限がありません</b><br />";
     }
 }
-
-// Backup files
-$fileList = glob($path . '/*');
-$blackList = [];
-foreach ($fileList as $f){
-    $blackList[] = basename($f);
+// Get file name list in a path
+function getFileName($searchPath){
+    $fileList = glob($searchPath);
+    $nameList = [];
+    foreach ($fileList as $f){
+        $nameList[] = basename($f);
+    }
+    return $nameList;
 }
+
+$whiteList = getFileName($path . '/white/*');
+$blackList = getFileName($path . '/black/*');
 
 include('menu.php');
 ?>
@@ -114,47 +147,55 @@ include('menu.php');
 
 <h3>ファイアーウォール</h3>
 <hr>
-<h4>IP ブラックリスト</h4>
+<h4>IP ホワイトリスト</h4>
 <form method="post" action="firewall.php">
-    国:
-    <select name="country">
-    <?php foreach ($countryList as $code=>$name){ ?>
-        <?php if(!in_array($code, $blackList)){ ?>
-        <option value="<?php echo $code ?>"><?php echo $name ?></option>
-        <?php } ?>
+    <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
+    <?php foreach ($countryChunk as $column){ ?>
+        <div style="float:left; width: 20%">
+            <?php foreach ($column as $code=>$name){ ?>
+                <?php
+                if($code == 'jp'){
+                    $attribute = ' checked disabled';
+                }elseif(in_array($code, $whiteList)){
+                    $attribute = ' checked';
+                }else{
+                    $attribute = '';
+                }
+                ?>
+                <div>
+                    <input type="checkbox" name="white_list[]" value="<?php echo $code ?>" <?php echo $attribute ?>> <?php echo $name ?>
+                </div>
+            <?php } ?>
+        </div>
     <?php } ?>
-    </select>
-    <input type="submit"  value="追加" style="font-size: 16px" />
+    <div style="clear: both">
+    <input type="submit" name="edit_white_list" value="変更" style="font-size: 16px" />
 </form>
 
+<div style="clear: both">
 <br>
-<table>
-    <thead>
-    <tr>
-        <th width="370">No</th>
-        <th width="370">国</th>
-<!--        <th></th>-->
-    </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($blackList as $i=>$ct){ ?>
-        <tr>
-            <td > <?php echo $i+1 ?></td>
-            <td>
-                <a class="remove-country" href="firewall.php?remove_country=<?php echo $ct ?>"><?php echo $countryList[$ct] ?></a>
-            </td>
-<!--            <td><button>削除</button></td>-->
-        </tr>
-    <?php }?>
-    </tbody>
-</table>
-
-<script>
-    $('.remove-country').on('click', function (e) {
-        var country = $(this).text();
-        // メッセージ表示
-        if(!confirm('「' + country +'」はブラックリストから外します。よろしいですか？')){
-            e.preventDefault();
-        }
-    });
-</script>
+<hr>
+<h4>IP ブラックリスト</h4>
+<form method="post" action="firewall.php">
+    <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
+    <?php foreach ($countryChunk as $column){ ?>
+        <div style="float:left; width: 20%">
+            <?php foreach ($column as $code=>$name){ ?>
+                <?php
+                if($code == 'jp'){
+                    $attribute = ' disabled';
+                }elseif(in_array($code, $blackList)){
+                    $attribute = ' checked';
+                }else{
+                    $attribute = '';
+                }
+                ?>
+                <div>
+                    <input type="checkbox" name="black_list[]" value="<?php echo $code ?>" <?php echo $attribute?> > <?php echo $name ?>
+                </div>
+            <?php } ?>
+        </div>
+    <?php } ?>
+    <div style="clear: both">
+    <input type="submit" name="edit_black_list" value="変更" style="font-size: 16px" />
+</form>
