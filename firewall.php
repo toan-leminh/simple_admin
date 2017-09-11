@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (count($removeCountries) + count($addCountries)) {
             // Success
             if (count($message) == 0) {
-                $errorMessage = "ブラックリストを変更しました";
+                $errorMessage = "{$listName}を変更しました";
             // Error
             } else {
                 $errorMessage = implode("<br>", $message);
