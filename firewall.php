@@ -199,6 +199,9 @@ include('menu.php');
 <hr>
 <h4>IP ホワイトリスト</h4>
 <form method="post" action="firewall.php">
+    <div>
+        <input type="checkbox" class="check-all"> Check All
+    </div>
     <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
     <?php foreach ($countryChunk as $column){ ?>
         <div style="float:left; width: 20%">
@@ -218,7 +221,7 @@ include('menu.php');
             <?php } ?>
         </div>
     <?php } ?>
-    <div style="clear: both">
+    <div style="clear: both"></div>
     <input type="submit" name="edit_white_list" value="変更" style="font-size: 16px" />
 </form>
 
@@ -227,6 +230,9 @@ include('menu.php');
 <hr>
 <h4>IP ブラックリスト</h4>
 <form method="post" action="firewall.php">
+    <div>
+        <input type="checkbox" class="check-all"> Check All
+    </div>
     <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
     <?php foreach ($countryChunk as $column){ ?>
         <div style="float:left; width: 20%">
@@ -246,6 +252,14 @@ include('menu.php');
             <?php } ?>
         </div>
     <?php } ?>
-    <div style="clear: both">
+    <div style="clear: both"></div>
     <input type="submit" name="edit_black_list" value="変更" style="font-size: 16px" />
 </form>
+
+<script>
+    $('.check-all').on('click', function (e) {
+        var $this = $(this);
+        var check = $this.prop('checked');
+        $this.closest('form').find('input:checkbox:not(:disabled)').prop('checked', check);
+    });
+</script>
