@@ -4,8 +4,13 @@ require_once 'Auth.php';
 ini_set('display_startup_errors', 1);
 ini_set('display_errors', 1);
 error_reporting(-1);
+// initial command
+// exec("firewall_config/reallocate_ipset au bg br ca cn co de fr gb hk in it kr nl pl ro ru th tr ua us vn jp")
+// sudo /usr/bin/firewall-cmd --permanent --zone=external --add-source=ipset:jp
+// sudo /usr/bin/firewall-cmd --zone=drop --list-all
+// sudo /usr/bin/firewall-cmd --zone=external --list-all
+// sudo /usr/bin/firewall-cmd --get-ipsets
 
-//exec("firewall_config/reallocate_ipset au bg br ca cn co de fr gb hk in it kr nl pl ro ru th tr ua us vn")
 $path = 'cf/firewall';
 $countryList = [
     "au" => "オーストラリア",
@@ -39,37 +44,82 @@ $errorMessage = '';
 // POSTメソッドを確認
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (checkAuth() == 1) {
+        $blackList =  getFileName($path . '/black/*');
+        $whiteList =  getFileName($path . '/white/*');
+
+        $validate = true;
         // Edit black list
         if (isset($_POST['edit_black_list'])) {
             $folder = 'black';
-            $currentList =  getFileName($path . '/black/*');
-            $newList = $_POST['black_list'];
             $zone = "drop";
+            $currentList =  $blackList;
             $listName = "ブラックリスト";
+            $newList = isset($_POST['black_list']) ? $_POST['black_list'] : [];
 
-            // Can't remove jp
-            if(isset($newList['jp'])){
-                unset($newList['jp']);
+            // Check with white list, can't add country in whitelist
+            $validateList = array_intersect($newList, $whiteList);
+            if(count($validateList)){
+                $validate = false;
+                $validateCountryName = [];
+                foreach ($validateList as $ct){
+                    $validateCountryName[] = "「{$countryList[$ct]}」";
+                }
+                $errorMessage = implode("、", $validateCountryName) . "はホワイトリストに存在するため追加できません";
+            }
+
+            // Can't add jp to black list
+            $index = array_search('jp', $blackList);
+            if($index !== false){
+                unset($blackList[$index]);
             }
         // Edit white list
         }else{
             $folder = 'white';
-            $currentList =  getFileName($path . '/white/*');
-            $newList = $_POST['white_list'];
             $zone = "external";
+            $currentList =  $whiteList;
             $listName = "ホワイトリスト";
+            $newList = isset($_POST['white_list']) ? $_POST['white_list'] : [];
+
+            // Check with black list, can't add the country in blacklist
+            $validateList = array_intersect($newList, $blackList);
+            if(count($validateList)){
+                $validate = false;
+                $validateCountryName = [];
+                foreach ($validateList as $ct){
+                    $validateCountryName[] = "「{$countryList[$ct]}」";
+                }
+                $errorMessage = implode("、", $validateCountryName) . "はブラックリストに存在するため追加できません";
+            }
 
             // Always allow jp
-            $newList['jp'] = $countryList['jp'];
+            if(!in_array('jp', $newList)){
+                $newList[] = 'jp';
+            }
         }
-        $addCountries = array_diff($newList, $currentList);
-        $removeCountries = array_diff($currentList, $newList);
+        // If validate then add/remove country in black list (white list)
+        if($validate){
+            $addCountries = array_diff($newList, $currentList);
+            $removeCountries = array_diff($currentList, $newList);
+        // Do nothing
+        }else{
+            $addCountries = [];
+            $removeCountries = [];
+        }
 
+//        foreach ($addCountries as $addCountry) {
+//            $addFile = $path . "/{$folder}/" . $addCountry;
+//            file_put_contents($addFile, "");
+//        }
+//
+//        foreach ($removeCountries as $removeCountry) {
+//            $removeFile = $path . "/{$folder}/" . $removeCountry;
+//            unlink($removeFile);
+//        }
         $message = [];
         foreach ($addCountries as $addCountry) {
             // Check country
             if (isset($countryList[$addCountry])) {
-                $addFile = $path . '/black/' . $addCountry;
+                $addFile = $path . "/$folder/" . $addCountry;
                 $addCountryName = $countryList[$addCountry];
                 if (!file_exists($addFile)) {
                     // firewalldでipsetを遮断する
@@ -92,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         foreach ($removeCountries as $removeCountry) {
             // Check country in country list
             if (isset($countryList[$removeCountry])) {
-                $removeFile = $path . '/black/' . $removeCountry;
+                $removeFile = $path . "/$folder/" . $removeCountry;
                 $removeCountryName = $countryList[$removeCountry];
 
                 if (file_exists($removeFile)) {
