@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 file_put_contents($openFilePath, "");
                 exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=80/tcp", $output, $return);
                 exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=443/tcp", $output, $return);
-
+                exec("sudo /usr/bin/firewall-cmd --reload");
             }else{
                 if(file_exists($openFilePath)){
                     unlink($openFilePath);
@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 file_put_contents($dropFilePath, "");
                 exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=80/tcp", $output, $return);
                 exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=443/tcp", $output, $return);
+                exec("sudo /usr/bin/firewall-cmd --reload");
             }
 
             $errorMessage = "設定を変更しました";
