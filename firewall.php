@@ -55,16 +55,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     unlink($dropFilePath);
                 }
                 file_put_contents($openFilePath, "");
-                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=80/tcp", $output, $return);
-                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=443/tcp", $output, $return);
+                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=1-50000/tcp", $output, $return);
+                //exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --add-port=443/tcp", $output, $return);
                 exec("sudo /usr/bin/firewall-cmd --reload");
             }else{
                 if(file_exists($openFilePath)){
                     unlink($openFilePath);
                 }
                 file_put_contents($dropFilePath, "");
-                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=80/tcp", $output, $return);
-                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=443/tcp", $output, $return);
+                exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=1-50000/tcp", $output, $return);
+                //exec("sudo /usr/bin/firewall-cmd --permanent --zone=public --remove-port=443/tcp", $output, $return);
                 exec("sudo /usr/bin/firewall-cmd --reload");
             }
 
@@ -225,64 +225,68 @@ include('menu.php');
 </form>
 
 <hr>
-<h4>IP ホワイトリスト</h4>
-<form method="post" action="firewall.php">
-    <div>
-        <input type="checkbox" class="check-all"> Check All
-    </div>
-    <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
-    <?php foreach ($countryChunk as $column){ ?>
-        <div style="float:left; width: 20%">
-            <?php foreach ($column as $code=>$name){ ?>
-                <?php
-                if($code == 'jp'){
-                    $attribute = ' checked disabled';
-                }elseif(in_array($code, $whiteList)){
-                    $attribute = ' checked';
-                }else{
-                    $attribute = '';
-                }
-                ?>
-                <div>
-                    <input type="checkbox" name="white_list[]" value="<?php echo $code ?>" <?php echo $attribute ?>> <?php echo $name ?>
-                </div>
-            <?php } ?>
-        </div>
-    <?php } ?>
-    <div style="clear: both"></div>
-    <input type="submit" name="edit_white_list" value="変更" style="font-size: 16px" />
-</form>
 
-<div style="clear: both">
-<br>
-<hr>
-<h4>IP ブラックリスト</h4>
-<form method="post" action="firewall.php">
-    <div>
-        <input type="checkbox" class="check-all"> Check All
-    </div>
-    <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
-    <?php foreach ($countryChunk as $column){ ?>
-        <div style="float:left; width: 20%">
-            <?php foreach ($column as $code=>$name){ ?>
-                <?php
-                if($code == 'jp'){
-                    $attribute = ' disabled';
-                }elseif(in_array($code, $blackList)){
-                    $attribute = ' checked';
-                }else{
-                    $attribute = '';
-                }
-                ?>
-                <div>
-                    <input type="checkbox" name="black_list[]" value="<?php echo $code ?>" <?php echo $attribute?> > <?php echo $name ?>
-                </div>
-            <?php } ?>
+<?php if($setting == 'open') {?>
+    <form method="post" action="firewall.php" id="open_form">
+        <h4>IP ホワイトリスト</h4>
+        <div>
+            <input type="checkbox" class="check-all"> Check All
         </div>
-    <?php } ?>
-    <div style="clear: both"></div>
-    <input type="submit" name="edit_black_list" value="変更" style="font-size: 16px" />
-</form>
+        <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
+        <?php foreach ($countryChunk as $column){ ?>
+            <div style="float:left; width: 20%">
+                <?php foreach ($column as $code=>$name){ ?>
+                    <?php
+                    if($code == 'jp'){
+                        $attribute = ' checked disabled';
+                    }elseif(in_array($code, $whiteList)){
+                        $attribute = ' checked';
+                    }else{
+                        $attribute = '';
+                    }
+                    ?>
+                    <div>
+                        <input type="checkbox" name="white_list[]" value="<?php echo $code ?>" <?php echo $attribute ?>> <?php echo $name ?>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+        <div style="clear: both"></div>
+        <input type="submit" name="edit_white_list" value="変更" style="font-size: 16px" />
+    </form>
+<?php }else{ ?>
+
+    <!--<div style="clear: both">-->
+    <!--<br>-->
+    <!--<hr>-->
+    <form method="post" action="firewall.php" id="drop_form">
+        <h4>IP ブラックリスト</h4>
+        <div>
+            <input type="checkbox" class="check-all"> Check All
+        </div>
+        <?php $countryChunk = array_chunk($countryList, ceil(count($countryList)/3), true); ?>
+        <?php foreach ($countryChunk as $column){ ?>
+            <div style="float:left; width: 20%">
+                <?php foreach ($column as $code=>$name){ ?>
+                    <?php
+                    if($code == 'jp'){
+                        $attribute = ' disabled';
+                    }elseif(in_array($code, $blackList)){
+                        $attribute = ' checked';
+                    }else{
+                        $attribute = '';
+                    }
+                    ?>
+                    <div>
+                        <input type="checkbox" name="black_list[]" value="<?php echo $code ?>" <?php echo $attribute?> > <?php echo $name ?>
+                    </div>
+                <?php } ?>
+            </div>
+        <?php } ?>
+        <div style="clear: both"></div>
+        <input type="submit" name="edit_black_list" value="変更" style="font-size: 16px" />
+    </form>
+<?php } ?>
 
 <script>
     $('.check-all').on('click', function (e) {
@@ -294,6 +298,8 @@ include('menu.php');
     $('.setting').on('change', function (e) {
         if(confirm('本当に設定を変更してよろしいでしょうか？')){
             $(this).closest('form').submit();
+        }else{
+            window.location.reload();
         }
     })
 </script>
