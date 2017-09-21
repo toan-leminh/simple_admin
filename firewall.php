@@ -226,7 +226,7 @@ include('menu.php');
 
 <hr>
 
-<?php if($setting == 'open') {?>
+<?php if(in_array('open', $setting)) {?>
     <form method="post" action="firewall.php" id="open_form">
         <h4>IP ホワイトリスト</h4>
         <div>
